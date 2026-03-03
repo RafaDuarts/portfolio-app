@@ -9,6 +9,9 @@ export class Portfolio {
   name: string;
 
   @Column({ unique: true })
+  slug: string;
+
+  @Column({ unique: true })
   email: string;
 
   @Column({ type: 'text' })

@@ -5,15 +5,15 @@ import { PortfolioModule } from './modules/portfolio/portfolio.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'portfolio_db',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
+    type: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 5432,
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+    database: process.env.DB_NAME || 'portfolio_db',
+    autoLoadEntities: true,
+    synchronize: true,
+  }),
     PortfolioModule,
   ],
 })

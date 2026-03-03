@@ -4,34 +4,66 @@ import {
   IsUrl,
   IsOptional,
   Matches,
+  MinLength,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePortfolioDto {
-  @IsString()
-  @Matches(/^[a-z0-9_]+$/, {
-    message:
-      'O nome deve estar no formato: nome_completo_exemplo (apenas letras minúsculas, números e underline)',
+  @ApiProperty({
+    example: 'Rafael test',
+    description: 'Nome do portfólio (exibido publicamente)',
+  })
+  @IsString({ message: 'O nome deve ser um texto válido' })
+  @MinLength(3, {
+    message: 'O nome deve ter pelo menos 3 caracteres',
   })
   name: string;
 
-  @IsEmail()
+  @ApiProperty({
+    example: 'test@email.com',
+    description: 'Email para contato',
+  })
+  @IsEmail({}, { message: 'Email inválido' })
   email: string;
 
+  @ApiProperty({
+    example: 'Desenvolvedor Full Stack especializado em NestJS e React.',
+    description: 'Descrição profissional',
+  })
   @IsString()
+  @MinLength(10, {
+    message: 'A descrição deve ter pelo menos 10 caracteres',
+  })
   description: string;
 
-  @IsUrl()
+  @ApiProperty({
+    example: 'https://linkedin.com/',
+    description: 'URL do perfil no LinkedIn',
+  })
+  @IsUrl({}, { message: 'LinkedIn deve ser uma URL válida' })
   linkedin: string;
 
+  @ApiPropertyOptional({
+    example: 'https://facebook.com/',
+    description: 'URL do perfil no Facebook',
+  })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({}, { message: 'Facebook deve ser uma URL válida' })
   facebook?: string;
 
+  @ApiPropertyOptional({
+    example: 'https://twitter.com/',
+    description: 'URL do perfil no Twitter/X',
+  })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({}, { message: 'Twitter deve ser uma URL válida' })
   twitter?: string;
 
+  @ApiPropertyOptional({
+    example: 'https://instagram.com/',
+    description: 'URL do perfil no Instagram',
+  })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({}, { message: 'Instagram deve ser uma URL válida' })
   instagram?: string;
 }

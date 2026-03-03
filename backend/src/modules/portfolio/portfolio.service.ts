@@ -15,31 +15,45 @@ export class PortfolioService {
     private readonly repository: Repository<Portfolio>,
   ) {}
 
+  private generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .replace(/\s+/g, '_');
+  }
+
   async create(data: CreatePortfolioDto, photo: string) {
+    const slug = this.generateSlug(data.name);
+
     const existing = await this.repository.findOne({
-      where: { name: data.name },
+      where: { slug },
     });
 
     if (existing) {
-      throw new ConflictException('Nome já cadastrado');
+      throw new ConflictException('Já existe um portfólio com esse nome');
     }
 
     const portfolio = this.repository.create({
       ...data,
+      slug,
       photo,
     });
 
     const saved = await this.repository.save(portfolio);
 
+    const baseUrl = process.env.API_URL || 'http://localhost:4000';
+
     return {
       ...saved,
-      link: `http://localhost:4000/portfolio/${saved.name}`,
+      link: `${baseUrl}/portfolio/${saved.slug}`,
     };
   }
 
-  async findByName(name: string) {
+  async findBySlug(slug: string) {
     const portfolio = await this.repository.findOne({
-      where: { name },
+      where: { slug },
     });
 
     if (!portfolio) {

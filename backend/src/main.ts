@@ -8,7 +8,18 @@ import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+);
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
@@ -16,6 +27,7 @@ async function bootstrap() {
     .setTitle('Portfolio API')
     .setDescription('API para portfólios públicos')
     .setVersion('1.0')
+    .addTag('Portfolio')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -23,4 +35,5 @@ async function bootstrap() {
 
   await app.listen(4000);
 }
+
 bootstrap();
