@@ -27,12 +27,20 @@ export class PortfolioService {
   async create(data: CreatePortfolioDto, photo: string) {
     const slug = this.generateSlug(data.name);
 
-    const existing = await this.repository.findOne({
+    const existingBySlug = await this.repository.findOne({
       where: { slug },
     });
 
-    if (existing) {
+    if (existingBySlug) {
       throw new ConflictException('Já existe um portfólio com esse nome');
+    }
+
+    const existingByEmail = await this.repository.findOne({
+      where: { email: data.email },
+    });
+
+    if (existingByEmail) {
+      throw new ConflictException('Email já cadastrado');
     }
 
     const portfolio = this.repository.create({

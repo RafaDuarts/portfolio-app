@@ -3,7 +3,7 @@ export interface Portfolio {
   name: string;
   email: string;
   description: string;
-  imageUrl?: string;
+  photo?: string;
   linkedin?: string;
   facebook?: string;
   twitter?: string;

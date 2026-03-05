@@ -5,6 +5,7 @@ import {
   IsOptional,
   Matches,
   MinLength,
+  IsNotEmpty,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -14,6 +15,7 @@ export class CreatePortfolioDto {
     description: 'Nome do portfólio (exibido publicamente)',
   })
   @IsString({ message: 'O nome deve ser um texto válido' })
+  @IsNotEmpty({ message: 'O nome é obrigatório' })
   @MinLength(3, {
     message: 'O nome deve ter pelo menos 3 caracteres',
   })
@@ -23,6 +25,7 @@ export class CreatePortfolioDto {
     example: 'test@email.com',
     description: 'Email para contato',
   })
+  @IsNotEmpty({ message: 'O email é obrigatório' })
   @IsEmail({}, { message: 'Email inválido' })
   email: string;
 
@@ -31,6 +34,7 @@ export class CreatePortfolioDto {
     description: 'Descrição profissional',
   })
   @IsString()
+  @IsNotEmpty({ message: 'A descrição é obrigatória' })
   @MinLength(10, {
     message: 'A descrição deve ter pelo menos 10 caracteres',
   })
@@ -40,6 +44,7 @@ export class CreatePortfolioDto {
     example: 'https://linkedin.com/',
     description: 'URL do perfil no LinkedIn',
   })
+  @IsNotEmpty({ message: 'O LinkedIn é obrigatório' })
   @IsUrl({}, { message: 'LinkedIn deve ser uma URL válida' })
   linkedin: string;
 

@@ -77,13 +77,27 @@ export class PortfolioController {
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({
-        destination: join(process.cwd(), 'uploads'),
+        destination: './uploads',
         filename: (req, file, callback) => {
           const uniqueName =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
           callback(null, uniqueName + extname(file.originalname));
         },
       }),
+
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
+          return cb(
+            new BadRequestException('Apenas imagens são permitidas'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
     }),
   )
   async create(
@@ -102,12 +116,16 @@ export class PortfolioController {
   @ApiParam({
     name: 'name',
     description:
-      'Nome do portfólio (apenas letras minúsculas, números e underline)',
+      'Nome do portfólio',
     example: 'rafael_duarte',
   })
   @ApiResponse({
     status: 200,
     description: 'Portfólio encontrado',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Email ou nome já cadastrado',
   })
   @ApiResponse({
     status: 404,

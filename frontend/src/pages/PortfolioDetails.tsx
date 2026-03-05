@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { portfolioService } from "../api/portfolio.service";
 import type { Portfolio } from "../types/portfolio";
+import axios from "axios";
 
 export default function PortfolioDetails() {
-  const { name } = useParams();
+  const { name } = useParams<{ name: string }>();
+  const navigate = useNavigate();
 
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!name) {
-      setLoading(false);
+      navigate("/not-found", { replace: true });
       return;
     }
 
@@ -20,73 +21,76 @@ export default function PortfolioDetails() {
       try {
         const data = await portfolioService.findByName(name!);
         setPortfolio(data);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Erro ao buscar portfólio:", err);
-        setError(true);
+
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          navigate("/not-found", { replace: true });
+          return;
+        }
+
+        navigate("/not-found", { replace: true });
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [name]);
+  }, [name, navigate]);
 
-  if (loading) return <p>Carregando...</p>;
-  if (error) return <p>Erro ao carregar portfólio</p>;
-  if (!portfolio) return <p>Portfólio não encontrado</p>;
+  if (loading) {
+    return <div className="center">Carregando...</div>;
+  }
+
+  if (!portfolio) return null;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>{portfolio.name}</h1>
+    <div className="hero-container">
+      <div className="hero-content">
+        <h1>{portfolio.name}</h1>
 
-      {portfolio.imageUrl && (
-        <img
-          src={portfolio.imageUrl}
-          alt={portfolio.name}
-          width={200}
-        />
-      )}
+        <p>{portfolio.description}</p>
 
-      <p><strong>Email:</strong> {portfolio.email}</p>
-      <p><strong>Descrição:</strong> {portfolio.description}</p>
-
-      <h3>Redes Sociais</h3>
-
-      {portfolio.linkedin && (
-        <p>
-          <strong>LinkedIn:</strong>{" "}
-          <a href={portfolio.linkedin} target="_blank" rel="noreferrer">
-            {portfolio.linkedin}
+        {portfolio.linkedin && (
+          <a
+            href={portfolio.linkedin}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary"
+          >
+            Linkedin ᗒ
           </a>
-        </p>
-      )}
+        )}
 
-      {portfolio.facebook && (
-        <p>
-          <strong>Facebook:</strong>{" "}
-          <a href={portfolio.facebook} target="_blank" rel="noreferrer">
-            {portfolio.facebook}
-          </a>
-        </p>
-      )}
+        <div className="social-icons">
+          {portfolio.facebook && (
+            <a href={portfolio.facebook} target="_blank" rel="noreferrer">
+              <i className="fab fa-facebook-f"></i>
+            </a>
+          )}
 
-      {portfolio.twitter && (
-        <p>
-          <strong>Twitter:</strong>{" "}
-          <a href={portfolio.twitter} target="_blank" rel="noreferrer">
-            {portfolio.twitter}
-          </a>
-        </p>
-      )}
+          {portfolio.instagram && (
+            <a href={portfolio.instagram} target="_blank" rel="noreferrer">
+              <i className="fab fa-instagram"></i>
+            </a>
+          )}
 
-      {portfolio.instagram && (
-        <p>
-          <strong>Instagram:</strong>{" "}
-          <a href={portfolio.instagram} target="_blank" rel="noreferrer">
-            {portfolio.instagram}
-          </a>
-        </p>
-      )}
+          {portfolio.twitter && (
+            <a href={portfolio.twitter} target="_blank" rel="noreferrer">
+              <i className="fab fa-twitter"></i>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div className="hero-image">
+        {portfolio.photo && (
+          <img
+            src={`${import.meta.env.VITE_API_URL}/${portfolio.photo}`}
+            alt={portfolio.name}
+          />
+        )}
+      </div>
     </div>
   );
 }
