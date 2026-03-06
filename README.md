@@ -6,6 +6,7 @@ Sistema fullstack para **cadastro e exibição de portfólios públicos**.
 
 - **Backend:** NestJS
 - **Frontend:** React + TypeScript
+- **Frontend em Next.js:** Next.js (SSR – página pública do portfólio)
 - **Banco:** PostgreSQL
 - **Docs:** Swagger
 - **Upload:** armazenamento local (persistido via volume Docker)
@@ -16,14 +17,15 @@ Sistema fullstack para **cadastro e exibição de portfólios públicos**.
 ## 📁 Estrutura do projeto
 
 ```
-/backend
-/frontend
+/backend           → API NestJS
+/frontend          → Frontend React
+/frontend-next     → Página pública em Next.js (SSR)
 /docker-compose.yml
 ```
 
 ---
 
-## ▶️ Como rodar (recomendado)
+## ▶️ Como rodar o projeto
 
 Pré-requisito: **Docker** e **Docker Compose** instalados.
 
@@ -58,40 +60,189 @@ docker-compose down
 > As portas abaixo são as padrão deste projeto. Se você alterou, confira no `docker-compose.yml`.
 
 - **Frontend:** `http://localhost:5173`
+- **Frontend Next (SSR):** `http://localhost:3000`
 - **Backend:** `http://localhost:4000`
 - **Swagger (API Docs):** `http://localhost:4000/api`
 - **Uploads (imagens):** `http://localhost:4000/uploads/<nome-do-arquivo>`
 
 ---
 
-## 🔌 Rotas da API (escopo do desafio)
+## 🔌 Rotas da API
 
-- `POST /portfolio` — cria um portfólio (recebe `multipart/form-data` com `photo`)
-- `GET /portfolio/:name` — busca um portfólio pelo nome (ex.: `nome_completo_exemplo`)
+### Criar portfólio
+
+```
+POST /portfolio
+```
+
+- Recebe `multipart/form-data`
+- Upload da foto (`photo`)
+- Validação de dados
+
+### Buscar portfólio
+
+```
+GET /portfolio/:name
+```
+
+Exemplo:
+
+```
+GET /portfolio/rafael_duarte
+```
 
 ---
 
-## 🧪 Como testar rápido
+## 🧪 Como testar rapidamente
 
-Você pode testar pelo **Swagger** em `http://localhost:4000/api`
+1. Acesse o **Swagger**:
 
-Também pode usar Insomnia/Postman para:
-- criar um portfólio via `POST /portfolio` com upload da foto
-- consultar via `GET /portfolio/:name`
+```
+http://localhost:4000/api
+```
+
+2. Execute:
+
+```
+POST /portfolio
+```
+
+3. Depois consulte:
+
+```
+GET /portfolio/:name
+```
+
+4. Abra a página pública:
+
+React:
+```
+http://localhost:5173/<name>
+```
+
+Next SSR:
+```
+http://localhost:3000/<name>
+```
 
 ---
 
-## 📝 Notas importantes
+## 📝 Regras de validação
 
-- O campo `name` deve estar no formato: `nome_completo_exemplo`
-- `name` não pode repetir
+- `name` não pode se repetir
 - `email` deve ser válido
-- links (linkedin e redes sociais) devem ser URLs válidas
-- a foto é obrigatória e é salva localmente (com persistência via volume Docker)
+- URLs devem ser válidas
+- `photo` é obrigatória
 
 ---
 
 ## 📦 READMEs por módulo
 
-- `backend/README.md` — detalhes específicos da API (NestJS)
-- `frontend/README.md` — detalhes específicos do frontend (React)
+- `backend/README.md` — detalhes da API NestJS
+- `frontend/README.md` — frontend React
+- `frontend-next/README.md` — implementação com Next.js
+
+## 🖥️ Frontends do Projeto
+
+O projeto possui duas implementações de frontend com propósitos diferentes:
+
+### React (Vite)
+
+A aplicação principal foi construída utilizando **React + Vite**, responsável por:
+
+- Consumo da API NestJS
+- Renderização da interface no cliente (Client-Side Rendering)
+- Navegação via React Router
+- Integração direta com o backend REST
+
+Essa implementação segue o escopo principal.
+
+---
+
+### Next.js (SSR)
+
+Como diferencial técnico, foi criada uma implementação alternativa da página pública do portfólio utilizando **Next.js**.
+
+Principais características:
+
+- **Server-Side Rendering (SSR)** da página `/:name`
+- **Dynamic Routes**
+- Página **404 customizada**
+- **Incremental Static Regeneration (ISR)** para cache de páginas públicas
+- Uso de `next/image` para renderização de imagens
+
+Benefícios dessa abordagem:
+
+- Melhor **SEO**
+- Melhor **tempo de carregamento inicial**
+- HTML já renderizado no servidor
+- Escalabilidade para páginas públicas de alto tráfego
+
+Essa implementação demonstra como a aplicação poderia evoluir para um modelo mais otimizado para produção.
+
+
+## 🧬 Possível Evolução com GraphQL
+
+Embora a API atual utilize REST, uma evolução natural da arquitetura seria a adoção de **GraphQL**.
+
+No contexto deste projeto, o GraphQL poderia ser aplicado da seguinte forma:
+
+### API Gateway GraphQL
+
+O NestJS poderia expor um endpoint:
+
+```
+/graphql
+```
+
+permitindo consultas mais flexíveis aos dados.
+
+### Query de Portfólio
+
+Exemplo de query:
+
+```
+query {
+  portfolio(name: "rafael_duarte") {
+    name
+    description
+    linkedin
+    photo
+    socialLinks {
+      facebook
+      twitter
+      instagram
+    }
+  }
+}
+```
+
+**Benefícios:**
+
+- O frontend solicita **apenas os campos necessários**
+- Redução de **overfetching**
+- Maior flexibilidade para diferentes interfaces
+- Melhor integração com aplicações mobile ou dashboards
+
+---
+
+## ✅ Conclusão
+
+Este projeto implementa:
+
+- API REST construída com NestJS
+- Persistência com PostgreSQL
+- Upload e armazenamento de imagens
+- Documentação da API com Swagger
+- Frontend em React consumindo a API
+- Ambiente totalmente containerizado com Docker
+
+Como diferencial, também foi implementada uma versão da página pública utilizando **Next.js com Server-Side Rendering (SSR)**, demonstrando uma possível evolução arquitetural da aplicação.
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvedor: **Rafael Duarte**
+Linkedin: https://www.linkedin.com/in/rafaduarts/
+Portfólio: https://rafaduarts.vercel.app/

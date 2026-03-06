@@ -58,7 +58,7 @@ export default function PortfolioDetails() {
             rel="noreferrer"
             className="btn-primary"
           >
-            Linkedin ᗒ
+            Linkedin <span className="arrow">⟩</span>
           </a>
         )}
 
