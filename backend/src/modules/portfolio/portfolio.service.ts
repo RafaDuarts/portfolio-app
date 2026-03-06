@@ -24,6 +24,20 @@ export class PortfolioService {
       .replace(/\s+/g, '_');
   }
 
+  private normalizeUrl(url?: string): string | undefined {
+    if (!url) return undefined;
+
+    const trimmed = url.trim();
+
+    if (!trimmed) return undefined;
+
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  }
+
   async create(data: CreatePortfolioDto, photo: string) {
     const slug = this.generateSlug(data.name);
 
@@ -45,6 +59,10 @@ export class PortfolioService {
 
     const portfolio = this.repository.create({
       ...data,
+      linkedin: this.normalizeUrl(data.linkedin),
+      facebook: this.normalizeUrl(data.facebook),
+      instagram: this.normalizeUrl(data.instagram),
+      twitter: this.normalizeUrl(data.twitter),
       slug,
       photo,
     });
