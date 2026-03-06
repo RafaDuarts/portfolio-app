@@ -142,6 +142,8 @@ http://localhost:3000/<name>
 - `frontend/README.md` — frontend React
 - `frontend-next/README.md` — implementação com Next.js
 
+---
+
 ## 🖥️ Frontends do Projeto
 
 O projeto possui duas implementações de frontend com propósitos diferentes:
@@ -243,6 +245,6 @@ Como diferencial, também foi implementada uma versão da página pública utili
 
 ## 👨‍💻 Autor
 
-Desenvolvedor: **Rafael Duarte**
-Linkedin: https://www.linkedin.com/in/rafaduarts/
-Portfólio: https://rafaduarts.vercel.app/
+Desenvolvedor: **Rafael Duarte dos Santos**
+- Linkedin: https://www.linkedin.com/in/rafaduarts/
+- Portfólio: https://rafaduarts.vercel.app/
