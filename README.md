@@ -182,6 +182,7 @@ Benefícios dessa abordagem:
 
 Essa implementação demonstra como a aplicação poderia evoluir para um modelo mais otimizado para produção.
 
+---
 
 ## 🧬 Possível Evolução com GraphQL
 
